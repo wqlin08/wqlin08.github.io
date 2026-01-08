@@ -1,0 +1,19 @@
+/* 针对非当前选中的目录项 */
+#aside-content .toc-content .toc-link:not(.active) span {
+    color: #555 !important;           /*稍微加深一点，从 #444 改为 #555 避免过黑 */
+    opacity: 1 !important;    
+    filter: blur(0px) !important; 
+    transition: all 0.2s ease-in-out; /* 增加平滑过渡效果 */
+}
+
+/* 针对当前选中的目录项 */
+#aside-content .toc-content .toc-link.active {
+    background-color: transparent !important;
+    font-weight: bold;
+    color: #49b1f5 !important;        /* 建议给高亮项加个主题色，突出显示 */
+}
+
+#aside-content .toc-content {
+    font-size: 15px;
+}
+
