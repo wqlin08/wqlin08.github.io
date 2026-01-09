@@ -1,8 +1,8 @@
 menu:
   首页: / || anzhiyu-icon-house
   遥感:
-    光学遥感: /categories/遥感/光学遥感/
-    SAR影像: /categories/遥感/SAR/
+    光学: /categories/遥感/光学遥感/
+    SAR: /categories/遥感/SAR/
     其他的: /categories/遥感/其他的
   深度学习: 
     CNN: /categories/深度学习/CNN/
@@ -10,8 +10,9 @@ menu:
     Transformer: /categories/深度学习/Transformer/
   机器学习: /categories/机器学习/
   工具箱:
-    CLI工具: /categories/工具/CLI/
-    Python脚本: /categories/工具/Python/
+    CLI工具: /categories/工具箱/CLI/
+    代码: /categories/工具箱/代码/
+    程序: /categories/工具箱/程序/
   关于我: /about/
 
 # nav相关配置
