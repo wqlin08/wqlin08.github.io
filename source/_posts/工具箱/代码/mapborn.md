@@ -217,7 +217,200 @@ from mapborn import Map
 
 help(Map)
 ```
+## 9. 测试
+```python
+import os
+from mapborn import Map
 
-## 9. 源代码和 whl 文件
+
+def test_mapborn_scenarios():
+
+    shp_path = r"E:\TPBoundary_new.shp"
+    tif_path = r"E:\DEM.tif"
+
+    if not os.path.exists(shp_path):
+        print(f"[Error] 找不到矢量文件: {shp_path}")
+        return
+    if not os.path.exists(tif_path):
+        print(f"[Error] 找不到栅格文件: {tif_path}")
+        return
+
+    print(">>> 数据检查通过，开始测试...")
+
+    print("\n--- [Test 1] DEM Raster: Full Parameter Test ---")
+
+    m1 = Map(
+        tif_path,
+        figsize=(10, 10),
+        nodata=None
+    )
+
+    m1.set_title(
+        "Test 1: DEM Raster (Full Parameters)",
+        fontsize=18,
+        fontfamily="Arial"
+    )
+
+    m1.set_cmap("terrain")
+
+    m1.set_clim(
+        vmin=None,
+        vmax=None
+    )
+
+    print("  Adding north arrow...")
+    m1.add_north_arrow(
+        location=(0.95,0.9),
+        style='nice',
+        size=0.08,
+        font_size=14,
+        font_family='Arial'
+    )
+
+    print("  Adding scale bar...")
+    m1.add_scale_bar(
+        location='bottom-left',
+        unit='km',
+        style='blocks',
+        font_size=12,
+        font_family='Arial'
+    )
+
+    print("  Adding grid...")
+    m1.add_grid(
+        style='default',
+        interval=None,
+        font_family='Arial',
+        label_sides=['bottom', 'left'],
+        label_rotation={'left': 45, 'bottom': 0},
+        font_size=14,
+        padding=0.01
+    )
+
+    print("  Adding colorbar...")
+    m1.add_colorbar(
+        location='right',
+        width="5%",
+        pad="2%",
+        extend='neither',
+        label="Elevation (m)",
+        label_size=14,
+        tick_size=12,
+        color='black',
+        font_family='Arial'
+    )
+
+    print("  Showing Plot 1...")
+    m1.show()
+
+    print("\n--- [Test 2] Vector Base Map (Full Parameters) ---")
+
+    m2 = Map(
+        shp_path,
+        figsize=(10, 10)
+    )
+
+    m2.set_title(
+        "Test 2: Vector Base Map (TP Boundary)",
+        fontsize=18,
+        fontfamily="Arial"
+    )
+
+    m2.add_north_arrow(
+        location='top-left',
+        style='arrow_line',
+        size=0.07,
+        font_size=14,
+        font_family='Arial'
+    )
+
+    m2.add_scale_bar(
+        location='bottom-left',
+        unit='km',
+        style='line-black',
+        font_size=12,
+        font_family='Arial'
+    )
+
+    m2.add_grid(
+        style='default',
+        interval=None,
+        font_family='Arial',
+        label_sides=['bottom', 'left'],
+        label_rotation=0,
+        font_size=12,
+        padding=0.015
+    )
+
+    print("  Showing Plot 2...")
+    m2.show()
+
+    print("\n--- [Test 3] Overlay: Raster + Vector (Full Parameters) ---")
+
+    m3 = Map(
+        tif_path,
+        figsize=(10, 10)
+    )
+
+
+    print(f"  Overlying vector: {os.path.basename(shp_path)}")
+    m3.add_vector(
+        shp_path,
+        edgecolor='blue',
+        facecolor='none',
+        linewidth=2,
+        alpha=1.0
+    )
+
+    m3.add_north_arrow(
+        location='top-right',
+        style='nice',
+        size=0.08,
+        font_size=14,
+        font_family='Arial'
+    )
+
+    m3.add_scale_bar(
+        location='bottom-left',
+        unit='km',
+        style='blocks',
+        font_size=12,
+        font_family='Arial'
+    )
+
+    m3.add_colorbar(
+        location='right',
+        width="5%",
+        pad="10%",
+        extend='neither',
+        label="Elevation (m)",
+        label_size=14,
+        tick_size=12,
+        color='black',
+        font_family='Arial'
+    )
+
+    m3.add_grid(
+        style='default',
+        interval=None,
+        font_family='Arial',
+        label_sides='all',
+        label_rotation={'left': 45, 'bottom': 0},
+        font_size=14,
+        padding=0.01
+    )
+
+    print("  Showing Plot 3...")
+    m3.show()
+
+    print("\n>>> 所有测试完成！")
+
+
+if __name__ == "__main__":
+    test_mapborn_scenarios()
+
+```
+
+## 10. 源代码和 whl 文件
 
 https://github.com/wqlin08/mapborn-Geographic-mapping-package
