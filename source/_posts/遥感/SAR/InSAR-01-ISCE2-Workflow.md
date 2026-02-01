@@ -61,12 +61,79 @@ conda install -c conda-forge isce2 mintpy gdal
 - **File Type**：选择 SLC (Single Look Complex)。GRD不包含相位信息。
 - **Beam Mode**：选择IW模式。
 - **精密轨道文件**：下载轨道文件进行校正：https://s1qc.asf.alaska.edu/aux_poeorb/
-- **DEM下载**：ISCE2 需要 DEM 来模拟并去除地形相位。
+- **DEM下载**：ISCE2 需要 DEM 来模拟并去除地形相位。（建议前往SRTM DEM官网手动下载。）
 
+轨道文件可以使用以下代码下载（先在哥白尼中心注册账号）：
+```python
+import os
+import glob
+import subprocess
+from datetime import datetime, timedelta
+
+# 配置路径
+data_dir = ""
+orbit_dir = ""
+
+# 1. 扫描 Data 目录下的所有 zip 文件
+slc_files = glob.glob(os.path.join(data_dir, "S1*.zip"))
+print(f"Found {len(slc_files)} SLC files in {data_dir}")
+
+# 2. 提取唯一的日期
+dates = set()
+for f in slc_files:
+    filename = os.path.basename(f)
+    try:
+        # Sentinel-1 标准命名格式: S1A_IW_SLC__1SDV_YYYYMMDDTHH...
+        parts = filename.split('_')
+        for part in parts:
+            if part.startswith('20') and 'T' in part and len(part) >= 15:
+                date_str = part.split('T')[0]
+                dates.add(date_str)
+                break
+    except Exception as e:
+        print(f"Skipping file {filename}: {e}")
+
+sorted_dates = sorted(list(dates))
+print(f"Unique dates to download: {len(sorted_dates)}")
+
+# 3. 逐个日期调用 dloadOrbits.py
+for d in sorted_dates:
+    # 下载成像当天前后各1天的轨道 (覆盖精密轨道的26小时跨度)
+    dt = datetime.strptime(d, "%Y%m%d")
+    start_date = (dt - timedelta(days=1)).strftime("%Y%m%d")
+    end_date = (dt + timedelta(days=2)).strftime("%Y%m%d")
+    
+    print(f"------------------------------------------------")
+    print(f"Downloading orbit for SLC date: {d} (Query: {start_date} to {end_date})")
+    
+    # 构造命令
+    cmd = f"dloadOrbits.py --start {start_date} --end {end_date} --dir {orbit_dir}"
+    
+    # 执行命令
+    try:
+        subprocess.run(cmd, shell=True, check=False)
+    except Exception as e:
+        print(f"Error downloading for {d}: {e}")
+
+print("\nAll downloads attempted.")
+
+```
+DEM 下载：
 ```python
 # 指定范围：南 北 西 东
-dem.py-a srtm3-b 30 31 90 91-u 你的Earthdata用户名-p 你的密码
+dem.py -a stitch -b 26 32 86 93 -k -s 1 -c # 读取 dem 解压融合镶嵌为 isce 所需要的格式。
 ```
+
+•	-a stitch: 执行拼接操作。
+
+•	-b 26 32 86 93: 边界范围（Lat 26~32, Lon 86~93）。
+
+•	-k: Keep，保留原始 .hgt 文件不删除（以防万一）。
+
+•	-s 1: Source，指定数据源为 SRTM 1-arcsecond（30m）。
+
+•	-c: 执行大地水准面校正 (Geoid Correction)。SRTM 原始数据是 EGM96 高程，ISCE 需要 WGS84 椭球高，这个参数会自动修正大约 -30m 到 -100m 的高程差
+
 
 在处理大数据前，建议结构如下：
 
@@ -90,15 +157,15 @@ dem.py-a srtm3-b 30 31 90 91-u 你的Earthdata用户名-p 你的密码
 
 ```python
 stackSentinel.py \
--s ../slc/ \
--o ../orbits/ \
--a ../aux/ \-d ../dem/dem.wgs84 \
--b "32.1 32.8 92.0 93.0" \
--W interferogram \
--c 3 \
--t 60 \
--r 10-z 2
--C
+  -s SLC \
+  -d DEM/demLat_N26_N32_Lon_E086_E093.dem.wgs84 \
+  -b "29 29.8 88 89.9" \
+  -a Aux \
+  -o orbits \
+  -C NESD \
+  -W interferogram \
+  -c 3 \
+
 ```
 
 - **-s (SLC 目录)**: 存放原始.zip 压缩包的路径。脚本会自动解压并提取元数据。
@@ -107,8 +174,8 @@ stackSentinel.py \
 - **-b (Bounding Box)**: 格式为 "S N W E"。建议范围略大于研究区，以确保包含足够的配准参考点。
 - **-W**：设置为interferogram（干涉流）。
 - **-c**：每个节点（影像日期）向后连接的邻居数量。
-- **-t**：最大时间基线阈值（天）。
-- **-r和-z**：多视数。
+- **-C**: 配准模式
+- **其他参数可以自己查看**
 
 执行stackSentinel.py后会生成一个名为 run_files 的文件夹。
 
@@ -119,6 +186,14 @@ cd configs
 ls run_*
 
 ```
+### 3.1. 执行
+逐个运行16个文件即可。
+
+例如：
+```bash
+bash run_01_unpack_topo_reference
+```
+
 ### 3.2. 自动化执行
 
 可以写一个脚本一次性执行全部任务。

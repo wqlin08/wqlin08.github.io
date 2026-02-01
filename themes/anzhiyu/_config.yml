@@ -13,6 +13,7 @@ menu:
     CLI工具: /categories/工具箱/CLI/
     代码: /categories/工具箱/代码/
     程序: /categories/工具箱/程序/
+    教程: /categories/工具箱/教程/
   关于我: /about/
 
 # nav相关配置
@@ -1057,8 +1058,13 @@ home_top:
       shadow: var(--anzhiyu-shadow-red)
       class: red
       icon: anzhiyu-icon-brain
+    - name: 机器学习  
+      path: /categories/机器学习/
+      shadow: var(--anzhiyu-shadow-red)
+      class: red
+      icon: anzhiyu-icon-robot
     - name: 工具箱
-      path: /categories/一些工具/
+      path: /categories/工具箱/
       shadow: var(--anzhiyu-shadow-green)
       class: green
       icon: anzhiyu-icon-screwdriver-wrench
