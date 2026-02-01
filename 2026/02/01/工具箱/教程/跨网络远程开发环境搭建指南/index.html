@@ -1,0 +1,406 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><title>跨网络远程开发环境搭建指南 | GeoPixel</title><meta name="keywords" content="代码,远程控制,教程"><meta name="author" content="Geo.Wqlin"><meta name="copyright" content="Geo.Wqlin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#f7f9fe"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-touch-fullscreen" content="yes"><meta name="apple-mobile-web-app-title" content="跨网络远程开发环境搭建指南"><meta name="application-name" content="跨网络远程开发环境搭建指南"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="#f7f9fe"><meta property="og:type" content="article"><meta property="og:title" content="跨网络远程开发环境搭建指南"><meta property="og:url" content="http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/index.html"><meta property="og:site_name" content="GeoPixel"><meta property="og:description" content="跨网络远程开发环境搭建指南：MacOS 连接 Windows 工作站本指南详细说明如何使用 VS Code Remote-SSH 结合 Tailscale 内网穿透工具，实现从 MacOS 客户端远程控制 Windows 工作站进行 Python 开发。 第一阶段：构建虚拟局域网 (Tailscal"><meta property="og:locale" content="zh-CN"><meta property="og:image" content="http://example.com/img/blog/SSH.jpg"><meta property="article:author" content="Geo.Wqlin"><meta property="article:tag" content="遥感, GIS, Python, 深度学习, 机器学习"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="http://example.com/img/blog/SSH.jpg"><meta name="description" content="跨网络远程开发环境搭建指南：MacOS 连接 Windows 工作站本指南详细说明如何使用 VS Code Remote-SSH 结合 Tailscale 内网穿透工具，实现从 MacOS 客户端远程控制 Windows 工作站进行 Python 开发。 第一阶段：构建虚拟局域网 (Tailscal"><link rel="shortcut icon" href="/img/fig.jpg"><link rel="canonical" href="http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><link rel="preconnect" href="//cdn.cbd.int"/><meta name="google-site-verification" content="xxx"/><meta name="baidu-site-verification" content="code-xxx"/><meta name="msvalidate.01" content="xxx"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.cbd.int/@fancyapps/ui@6.1.6/dist/fancybox/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  linkPageTop: undefined,
+  peoplecanvas: undefined,
+  postHeadAiDescription: {"enable":true,"gptName":"AnZhiYu","mode":"local","switchBtn":false,"btnLink":"https://afdian.net/item/886a79d4db6711eda42a52540025c377","randomNum":3,"basicWordCount":1000,"key":"xxxx","Referer":"https://xx.xx/"},
+  diytitle: {"enable":true,"leaveTitle":"w(ﾟДﾟ)w 不要走！再看看嘛！","backTitle":"♪(^∇^*)欢迎肥来！"},
+  LA51: undefined,
+  greetingBox: undefined,
+  twikooEnvId: '',
+  commentBarrageConfig:undefined,
+  music_page_default: "nav_music",
+  root: '/',
+  preloader: {"source":3},
+  friends_vue_info: undefined,
+  navMusic: true,
+  mainTone: undefined,
+  authorStatus: undefined,
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"简","rightMenuMsgToTraditionalChinese":"转为繁体","rightMenuMsgToSimplifiedChinese":"转为简体"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":330},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    simplehomepage: true,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"copy":true,"copyrightEbable":false,"limitCount":50,"languages":{"author":"作者: Geo.Wqlin","link":"链接: ","source":"来源: GeoPixel","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。","copySuccess":"复制成功，复制和转载请标注本文地址"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#425AEF","bgDark":"#1f1f1f","position":"top-center"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.cbd.int/flickr-justified-gallery@2.2.0/dist/fjGallery.min.js',
+      css: 'https://cdn.cbd.int/flickr-justified-gallery@2.2.0/dist/fjGallery.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  shortcutKey: undefined,
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  configTitle: 'GeoPixel',
+  title: '跨网络远程开发环境搭建指南',
+  postAI: '',
+  pageFillDescription: '跨网络远程开发环境搭建指南：MacOS 连接 Windows 工作站, 第一阶段：构建虚拟局域网 (Tailscale), 1. Windows 工作站端设置, 2. MacOS 客户端设置, 3. 连通性测试, 第二阶段：部署 SSH 服务 (Windows 端), 1. 下载与安装, 2. 配置并启动服务, 3. 获取登录用户名, 第三阶段：配置 VS Code (MacOS 端), 1. 安装插件, 2.配置 SSH 连接信息, 第四阶段：建立连接与环境配置, 1.发起连接, 2.输入密码, 3.远程环境挂载, 第五阶段：常见问题, VS Code Server 启动崩溃跨网络远程开发环境搭建指南连接工作站本指南详细说明如何使用结合内网穿透工具实现从客户端远程控制工作站进行开发第一阶段构建虚拟局域网用于将处于不同物理网络如家庭网络与单位内网的设备组建成一个虚拟局域网解决公网缺失与防火墙阻断问题工作站端设置访问下载页面下载并安装客户端启动应用并使用或账号登录在任务栏右下角找到图标右键点击记录显示的地址格式通常为这是后续连接使用的客户端设置通过或官网下载安装启动并登录与端完全一致的账号确保状态显示为连通性测试在终端执行以下命令验证网络是否打通将替换为端记录的若返回则网络连通第二阶段部署服务端采用发布的最新版进行安装此方式比自带的可选功能更稳定且版本更新下载与安装访问发布页下载最新的安装包例如双击运行安装包按照提示完成安装配置并启动服务管理员身份打开不是命令提示符依次执行以下命令启动服务设置服务为开机自启确认服务状态应显示配置防火墙允许端口入站获取登录用户名在中执行以下命令获取准确的用户名输出示例此时用户名为斜杠后的部分第三阶段配置端安装插件打开进入扩展市场搜索并安装配置连接信息按下打开命令面板输入并选择选择路径为用户名的文件添加以下配置块填入定义的名称填入的填入获取的用户名第四阶段建立连接与环境配置发起连接点击左下角的蓝色远程图标选择选择在中定义的名称如输入密码使用电脑的码远程环境挂载打开扩展市场在栏目下安装插件打开任意文件点击右下角版本号选择上已有的环境第五阶段常见问题启动崩溃在上管理员运行右键点击窗口顶部标题栏选择属性取消勾选使用旧版控制台删除上的用户名文件夹后重试',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-02-01 11:29:22',
+  postMainColor: '',
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#18171d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f7f9fe')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+          const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+          const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+          const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+          if (t === undefined) {
+            if (isLightMode) activateLightMode()
+            else if (isDarkMode) activateDarkMode()
+            else if (isNotSpecified || hasNoSupport) {
+              const now = new Date()
+              const hour = now.getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addListener(e => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.1"></head><body data-type="anzhiyu"><div id="web_bg"></div><div id="an_music_bg"></div><div id="loading-box" onclick="document.getElementById(&quot;loading-box&quot;).classList.add(&quot;loaded&quot;)"><div class="loading-bg"><img class="loading-img nolazyload" alt="加载头像" src="/%5Cimg%5Cavatar.jpg"/><div class="loading-image-dot"></div></div></div><script>const preloader = {
+  endLoading: () => {
+    document.getElementById('loading-box').classList.add("loaded");
+  },
+  initLoading: () => {
+    document.getElementById('loading-box').classList.remove("loaded")
+  }
+}
+window.addEventListener('load',()=> { preloader.endLoading() })
+setTimeout(function(){preloader.endLoading();},10000)
+
+if (true) {
+  document.addEventListener('pjax:send', () => { preloader.initLoading() })
+  document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+}</script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.10/progress_bar/progress_bar.css"/><script async="async" src="https://cdn.cbd.int/pace-js@1.2.4/pace.min.js" data-pace-options="{ &quot;restartOnRequestAfter&quot;:false,&quot;eventLag&quot;:false}"></script><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><div id="nav-group"><span id="blog_name"><a id="site-name" href="/" accesskey="h"><div class="title">GeoPixel</div><i class="anzhiyufont anzhiyu-icon-house-chimney"></i></a></span><div class="mask-name-container"><div id="name-container"><a id="page-name" href="javascript:anzhiyu.scrollToDest(0, 500)">PAGE_NAME</a></div></div><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 遥感</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/categories/%E9%81%A5%E6%84%9F/%E5%85%89%E5%AD%A6%E9%81%A5%E6%84%9F/"><span> 光学</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E9%81%A5%E6%84%9F/SAR/"><span> SAR</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E9%81%A5%E6%84%9F/%E5%85%B6%E4%BB%96%E7%9A%84"><span> 其他的</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 深度学习</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CNN/"><span> CNN</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/GAN/"><span> GAN</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/Transformer/"><span> Transformer</span></a></li></ul></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span> 机器学习</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 工具箱</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/CLI/"><span> CLI工具</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/"><span> 代码</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E7%A8%8B%E5%BA%8F/"><span> 程序</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/"><span> 教程</span></a></li></ul></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><span> 关于我</span></a></div></div></div><div id="nav-right"><div class="nav-button" id="randomPost_button"><a class="site-page" onclick="toRandomPost()" title="随机前往一个文章" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-dice"></i></a></div><input id="center-console" type="checkbox"/><label class="widget" for="center-console" title="中控台" onclick="anzhiyu.switchConsole();"><i class="left"></i><i class="widget center"></i><i class="widget right"></i></label><div id="console"><div class="console-card-group-reward"><ul class="reward-all console-card"><li class="reward-item"><a href="/img/wx.jpg" target="_blank"><img class="post-qr-code-img" alt="微信" src="/img/wx.jpg"/></a><div class="post-qr-code-desc">微信</div></li></ul></div><div class="console-card-group"><div class="console-card-group-left"><div class="console-card" id="card-newest-comments"><div class="card-content"><div class="author-content-item-tips">互动</div><span class="author-content-item-title"> 最新评论</span></div><div class="aside-list"><span>正在加载中...</span></div></div></div><div class="console-card-group-right"><div class="console-card tags"><div class="card-content"><div class="author-content-item-tips">兴趣点</div><span class="author-content-item-title">寻找你感兴趣的领域</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/ISCE2/" style="font-size: 1.05rem;">ISCE2<sup>2</sup></a><a href="/tags/InSAR/" style="font-size: 1.05rem;">InSAR<sup>2</sup></a><a href="/tags/Python/" style="font-size: 1.05rem;">Python<sup>3</sup></a><a href="/tags/SBAS/" style="font-size: 1.05rem;">SBAS<sup>2</sup></a><a href="/tags/Sentinel-1/" style="font-size: 1.05rem;">Sentinel-1<sup>2</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81/" style="font-size: 1.05rem;">代码<sup>2</sup></a><a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 1.05rem;">工具<sup>2</sup></a><a href="/tags/%E6%95%99%E7%A8%8B/" style="font-size: 1.05rem;">教程<sup>1</sup></a><a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" style="font-size: 1.05rem;">远程控制<sup>1</sup></a><a href="/tags/%E9%95%B6%E5%B5%8C/" style="font-size: 1.05rem;">镶嵌<sup>1</sup></a></div></div><hr/></div></div><div class="console-card history"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-box-archiv"></i><span>文章</span></div><div class="card-archives"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/02/"><span class="card-archive-list-date">二月 2026</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">1</span><span>篇</span></div></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/01/"><span class="card-archive-list-date">一月 2026</span><div class="card-archive-list-count-group"><span class="card-archive-list-count">5</span><span>篇</span></div></a></li></ul></div><hr/></div></div></div><div class="button-group"><div class="console-btn-item"><a class="darkmode_switchbutton" title="显示模式切换" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-moon"></i></a></div><div class="console-btn-item" id="consoleHideAside" onclick="anzhiyu.hideAsideBtn()" title="边栏显示控制"><a class="asideSwitch"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></a></div><div class="console-btn-item" id="consoleMusic" onclick="anzhiyu.musicToggle()" title="音乐开关"><a class="music-switch"><i class="anzhiyufont anzhiyu-icon-music"></i></a></div></div><div class="console-mask" onclick="anzhiyu.hideConsole()" href="javascript:void(0);"></div></div><div class="nav-button" id="nav-totop"><a class="totopbtn" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i><span id="percent" onclick="anzhiyu.scrollToDest(0,500)">0</span></a></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);" title="切换"><i class="anzhiyufont anzhiyu-icon-bars"></i></a></div></div></div></nav><div id="post-info"><div id="post-firstinfo"><div class="meta-firstline"><a class="post-meta-original">原创</a><span class="post-meta-categories"><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/" itemprop="url">工具箱</a><i class="anzhiyufont anzhiyu-icon-angle-right post-meta-separator"></i><i class="anzhiyufont anzhiyu-icon-inbox post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/" itemprop="url">教程</a></span><span class="article-meta tags"><a class="article-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>代码</span></a><a class="article-meta__tags" href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>远程控制</span></a><a class="article-meta__tags" href="/tags/%E6%95%99%E7%A8%8B/" tabindex="-1" itemprop="url"> <span> <i class="anzhiyufont anzhiyu-icon-hashtag"></i>教程</span></a></span></div></div><h1 class="post-title" itemprop="name headline">跨网络远程开发环境搭建指南</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="anzhiyufont anzhiyu-icon-calendar-days post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" itemprop="dateCreated datePublished" datetime="2026-01-31T16:00:00.000Z" title="发表于 2026-02-01 00:00:00">2026-02-01</time><span class="post-meta-separator"></span><i class="anzhiyufont anzhiyu-icon-history post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" itemprop="dateCreated datePublished" datetime="2026-02-01T03:29:22.583Z" title="更新于 2026-02-01 11:29:22">2026-02-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">       </span><span class="post-meta-position" title="作者IP属地为新年广场"><i class="anzhiyufont anzhiyu-icon-location-dot"></i>新年广场</span></div></div></div><section class="main-hero-waves-area waves-area"><svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M -160 44 c 30 0 58 -18 88 -18 s 58 18 88 18 s 58 -18 88 -18 s 58 18 88 18 v 44 h -352 Z"></path></defs><g class="parallax"><use href="#gentle-wave" x="48" y="0"></use><use href="#gentle-wave" x="48" y="3"></use><use href="#gentle-wave" x="48" y="5"></use><use href="#gentle-wave" x="48" y="7"></use></g></svg></section><div id="post-top-cover"><img class="nolazyload" id="post-top-bg" src="/img/blog/SSH.jpg"></div></header><main id="blog-container"><div class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container" itemscope itemtype="http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><header><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/" itemprop="url">工具箱</a><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/" itemprop="url">教程</a><a href="/tags/%E4%BB%A3%E7%A0%81/" tabindex="-1" itemprop="url">代码</a><a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" tabindex="-1" itemprop="url">远程控制</a><a href="/tags/%E6%95%99%E7%A8%8B/" tabindex="-1" itemprop="url">教程</a><h1 id="CrawlerTitle" itemprop="name headline">跨网络远程开发环境搭建指南</h1><span itemprop="author" itemscope itemtype="http://schema.org/Person">Geo.Wqlin</span><time itemprop="dateCreated datePublished" datetime="2026-01-31T16:00:00.000Z" title="发表于 2026-02-01 00:00:00">2026-02-01</time><time itemprop="dateCreated datePublished" datetime="2026-02-01T03:29:22.583Z" title="更新于 2026-02-01 11:29:22">2026-02-01</time></header><h1 id="跨网络远程开发环境搭建指南：MacOS-连接-Windows-工作站"><a href="#跨网络远程开发环境搭建指南：MacOS-连接-Windows-工作站" class="headerlink" title="跨网络远程开发环境搭建指南：MacOS 连接 Windows 工作站"></a>跨网络远程开发环境搭建指南：MacOS 连接 Windows 工作站</h1><p>本指南详细说明如何使用 VS Code Remote-SSH 结合 Tailscale 内网穿透工具，实现从 MacOS 客户端远程控制 Windows 工作站进行 Python 开发。</p>
+<h2 id="第一阶段：构建虚拟局域网-Tailscale"><a href="#第一阶段：构建虚拟局域网-Tailscale" class="headerlink" title="第一阶段：构建虚拟局域网 (Tailscale)"></a>第一阶段：构建虚拟局域网 (Tailscale)</h2><p>Tailscale 用于将处于不同物理网络（如家庭网络与单位内网）的设备组建成一个虚拟局域网，解决公网 IP 缺失与防火墙阻断问题。</p>
+<h3 id="1-Windows-工作站端设置"><a href="#1-Windows-工作站端设置" class="headerlink" title="1. Windows 工作站端设置"></a>1. Windows 工作站端设置</h3><ol>
+<li>访问 <a target="_blank" rel="noopener" href="https://tailscale.com/download/windows">Tailscale 下载页面</a>。</li>
+<li>下载并安装 Windows 客户端。</li>
+<li>启动应用并使用 Google、Microsoft 或 GitHub 账号登录。</li>
+<li>在任务栏右下角找到 Tailscale 图标，右键点击，记录显示的 IP 地址（格式通常为 <code>100.x.y.z</code>）。这是后续连接使用的 <strong>HostName</strong>。</li>
+</ol>
+<h3 id="2-MacOS-客户端设置"><a href="#2-MacOS-客户端设置" class="headerlink" title="2. MacOS 客户端设置"></a>2. MacOS 客户端设置</h3><ol>
+<li>通过 Mac App Store 或官网下载安装 Tailscale。</li>
+<li>启动并登录与 Windows 端 <strong>完全一致</strong> 的账号。</li>
+<li>确保状态显示为 <strong>Connect</strong>。</li>
+</ol>
+<h3 id="3-连通性测试"><a href="#3-连通性测试" class="headerlink" title="3. 连通性测试"></a>3. 连通性测试</h3><p>在 MacOS 终端执行以下命令验证网络是否打通：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ping 100.x.y.z</span><br><span class="line"><span class="comment"># 将 100.x.y.z 替换为 Windows 端记录的 IP</span></span><br><span class="line"><span class="comment"># 若返回 64 bytes from ... 则网络连通</span></span><br></pre></td></tr></table></figure>
+<h2 id="第二阶段：部署-SSH-服务-Windows-端"><a href="#第二阶段：部署-SSH-服务-Windows-端" class="headerlink" title="第二阶段：部署 SSH 服务 (Windows 端)"></a>第二阶段：部署 SSH 服务 (Windows 端)</h2><p>采用 GitHub 发布的最新版 Win32-OpenSSH 进行安装，此方式比 Windows 自带的可选功能更稳定且版本更新。</p>
+<h3 id="1-下载与安装"><a href="#1-下载与安装" class="headerlink" title="1. 下载与安装"></a>1. 下载与安装</h3><ol>
+<li>访问 GitHub 发布页：<a target="_blank" rel="noopener" href="https://github.com/PowerShell/Win32-OpenSSH/releases">PowerShell&#x2F;Win32-OpenSSH Releases</a>。</li>
+<li>下载最新的 .msi 安装包（例如 OpenSSH-Win64-v10.0.0.0.msi）。</li>
+<li>双击运行安装包，按照提示完成安装。</li>
+</ol>
+<h3 id="2-配置并启动服务"><a href="#2-配置并启动服务" class="headerlink" title="2. 配置并启动服务"></a>2. 配置并启动服务</h3><p>管理员身份打开 PowerShell (不是命令提示符)，依次执行以下命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 启动 SSHD 服务</span></span><br><span class="line"><span class="built_in">Start-Service</span> sshd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 设置服务为开机自启</span></span><br><span class="line"><span class="built_in">Set-Service</span> <span class="literal">-Name</span> sshd <span class="literal">-StartupType</span> <span class="string">&#x27;Automatic&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 确认服务状态 (应显示 Running)</span></span><br><span class="line"><span class="built_in">Get-Service</span> sshd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 配置防火墙允许 22 端口入站</span></span><br><span class="line"><span class="keyword">if</span> (!(<span class="built_in">Get-NetFirewallRule</span> <span class="literal">-Name</span> <span class="string">&quot;OpenSSH-Server-In-TCP&quot;</span> <span class="literal">-ErrorAction</span> SilentlyContinue | <span class="built_in">Select-Object</span> Name, Enabled)) &#123; </span><br><span class="line">    <span class="built_in">New-NetFirewallRule</span> <span class="literal">-Name</span> <span class="string">&#x27;OpenSSH-Server-In-TCP&#x27;</span> <span class="literal">-DisplayName</span> <span class="string">&#x27;OpenSSH Server (sshd)&#x27;</span> <span class="literal">-Enabled</span> True <span class="literal">-Direction</span> Inbound <span class="literal">-Protocol</span> TCP <span class="literal">-Action</span> Allow <span class="literal">-LocalPort</span> <span class="number">22</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-获取登录用户名"><a href="#3-获取登录用户名" class="headerlink" title="3. 获取登录用户名"></a>3. 获取登录用户名</h3><p>在 PowerShell 中执行以下命令，获取准确的用户名：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">whoami</span><br><span class="line"><span class="comment"># 输出示例：DESKTOP-PC\Administrator</span></span><br><span class="line"><span class="comment"># 此时用户名为斜杠后的部分：Administrator</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="第三阶段：配置-VS-Code-MacOS-端"><a href="#第三阶段：配置-VS-Code-MacOS-端" class="headerlink" title="第三阶段：配置 VS Code (MacOS 端)"></a>第三阶段：配置 VS Code (MacOS 端)</h2><h3 id="1-安装插件"><a href="#1-安装插件" class="headerlink" title="1. 安装插件"></a>1. 安装插件</h3><ol>
+<li>打开 VS Code。</li>
+<li>进入扩展市场（Extensions）。</li>
+<li>搜索并安装 Remote - SSH。</li>
+</ol>
+<h3 id="2-配置-SSH-连接信息"><a href="#2-配置-SSH-连接信息" class="headerlink" title="2.配置 SSH 连接信息"></a>2.配置 SSH 连接信息</h3><ol>
+<li>按下 Cmd + Shift + P 打开命令面板。</li>
+<li>输入并选择 Remote-SSH: Open Configuration File。</li>
+<li>选择路径为 &#x2F;Users&#x2F;用户名&#x2F;.ssh&#x2F;config 的文件。</li>
+<li>添加以下配置块：</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Host work-pc                # 填入定义的名称</span><br><span class="line">    HostName 100.x.y.z      # 填入 Windows 的 Tailscale IP</span><br><span class="line">    User your_username      # 填入 whoami 获取的用户名</span><br><span class="line">    Port 22</span><br></pre></td></tr></table></figure>
+<h2 id="第四阶段：建立连接与环境配置"><a href="#第四阶段：建立连接与环境配置" class="headerlink" title="第四阶段：建立连接与环境配置"></a>第四阶段：建立连接与环境配置</h2><h3 id="1-发起连接"><a href="#1-发起连接" class="headerlink" title="1.发起连接"></a>1.发起连接</h3><ol>
+<li>点击 VS Code 左下角的蓝色远程图标 &gt;&lt;。</li>
+<li>选择 Connect to Host…。</li>
+<li>选择在 Config 中定义的名称（如 work-pc）。</li>
+</ol>
+<h3 id="2-输入密码"><a href="#2-输入密码" class="headerlink" title="2.输入密码"></a>2.输入密码</h3><p>使用 Windows电脑的 PIN 码。</p>
+<h3 id="3-远程环境挂载"><a href="#3-远程环境挂载" class="headerlink" title="3.远程环境挂载"></a>3.远程环境挂载</h3><ol>
+<li>打开扩展市场，在 SSH: work-pc 栏目下安装 Python 插件。</li>
+<li>打开任意 .py 文件。</li>
+<li>点击右下角 Python 版本号，选择 Windows 上已有的环境。</li>
+</ol>
+<h2 id="第五阶段：常见问题"><a href="#第五阶段：常见问题" class="headerlink" title="第五阶段：常见问题"></a>第五阶段：常见问题</h2><h3 id="VS-Code-Server-启动崩溃"><a href="#VS-Code-Server-启动崩溃" class="headerlink" title="VS Code Server 启动崩溃"></a>VS Code Server 启动崩溃</h3><ol>
+<li>在 Windows 上管理员运行 cmd.exe。</li>
+<li>右键点击窗口顶部标题栏，选择 属性。</li>
+<li>取消勾选 使用旧版控制台 (Use legacy console)。</li>
+<li>删除 Windows 上的 C:\Users\用户名.vscode-server 文件夹后重试。</li>
+</ol>
+</article><div class="post-copyright"><div class="copyright-cc-box"><i class="anzhiyufont anzhiyu-icon-copyright"></i></div><div class="post-copyright__author_box"><a class="post-copyright__author_img" href="/" title="头像"><img class="post-copyright__author_img_back" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/avatar.jpg" title="头像" alt="头像"><img class="post-copyright__author_img_front" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/avatar.jpg" title="头像" alt="头像"></a><div class="post-copyright__author_name">Geo.Wqlin</div><div class="post-copyright__author_desc"></div></div><div class="post-copyright__post__info"><a class="post-copyright__original" title="该文章为原创文章，注意版权协议" href="http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/">原创</a><a class="post-copyright-title"><span onclick="rm.copyPageUrl('http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/')">跨网络远程开发环境搭建指南</span></a></div><div class="post-tools" id="post-tools"><div class="post-tools-left"><div class="rewardLeftButton"><div class="post-reward" onclick="anzhiyu.addRewardMask()"><div class="reward-button button--animated" title="赞赏作者"><i class="anzhiyufont anzhiyu-icon-hand-heart-fill"></i>打赏作者</div><div class="reward-main"><div class="reward-all"><span class="reward-title">感谢你赐予我前进的力量</span><ul class="reward-group"><li class="reward-item"><a href="/img/wx.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/wx.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li></ul><a class="reward-main-btn" href="/about/#about-reward" target="_blank"><div class="reward-text">赞赏者名单</div><div class="reward-dec">因为你们的支持让我意识到写文章的价值🙏</div></a></div></div></div><div id="quit-box" onclick="anzhiyu.removeRewardMask()" style="display: none"></div></div><div class="shareRight"><div class="share-link mobile"><div class="share-qrcode"><div class="share-button" title="使用手机访问这篇文章"><i class="anzhiyufont anzhiyu-icon-qrcode"></i></div><div class="share-main"><div class="share-main-all"><div id="qrcode" title="http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"></div><div class="reward-dec">使用手机访问这篇文章</div></div></div></div></div><div class="share-link weibo"><a class="share-button" target="_blank" href="https://service.weibo.com/share/share.php?title=跨网络远程开发环境搭建指南&amp;url=http://example.com/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/&amp;pic=/img/blog/SSH.jpg" rel="external nofollow noreferrer noopener"><i class="anzhiyufont anzhiyu-icon-weibo"></i></a></div><script>function copyCurrentPageUrl() {
+  var currentPageUrl = window.location.href;
+  var input = document.createElement("input");
+  input.setAttribute("value", currentPageUrl);
+  document.body.appendChild(input);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  document.body.removeChild(input);
+}</script><div class="share-link copyurl"><div class="share-button" id="post-share-url" title="复制链接" onclick="copyCurrentPageUrl()"><i class="anzhiyufont anzhiyu-icon-link"></i></div></div></div></div></div><div class="post-copyright__notice"><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">GeoPixel</a>！</span></div></div><div class="post-tools-right"><div class="tag_share"><div class="post-meta__box"><div class="post-meta__box__tag-list"><a class="post-meta__box__tags" href="/tags/%E4%BB%A3%E7%A0%81/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>代码<span class="tagsPageCount">2</span></a><a class="post-meta__box__tags" href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>远程控制<span class="tagsPageCount">1</span></a><a class="post-meta__box__tags" href="/tags/%E6%95%99%E7%A8%8B/"><span class="tags-punctuation"> <i class="anzhiyufont anzhiyu-icon-tag"></i></span>教程<span class="tagsPageCount">1</span></a></div></div></div><div class="post_share"><div class="social-share" data-image="/img/blog/SSH.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"/><script src="https://cdn.cbd.int/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer="defer"></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C/"><img class="prev-cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">羽化镶嵌：实现栅格数据无缝镶嵌的方案</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="anzhiyufont anzhiyu-icon-thumbs-up fa-fw" style="font-size: 1.5rem; margin-right: 4px"></i><span>喜欢这篇文章的人也看了</span></div><div class="relatedPosts-list"><div><a href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C/" title="羽化镶嵌：实现栅格数据无缝镶嵌的方案"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="anzhiyufont anzhiyu-icon-calendar-days fa-fw"></i> 2026-01-09</div><div class="title">羽化镶嵌：实现栅格数据无缝镶嵌的方案</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-content"><div class="author-info-avatar"><img class="avatar-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__description">分享自己关于遥感、深度学习的一些算法和小工具</div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-bars"></i><span>文章目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97%EF%BC%9AMacOS-%E8%BF%9E%E6%8E%A5-Windows-%E5%B7%A5%E4%BD%9C%E7%AB%99"><span class="toc-number">1.</span> <span class="toc-text">跨网络远程开发环境搭建指南：MacOS 连接 Windows 工作站</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%9E%84%E5%BB%BA%E8%99%9A%E6%8B%9F%E5%B1%80%E5%9F%9F%E7%BD%91-Tailscale"><span class="toc-number">1.1.</span> <span class="toc-text">第一阶段：构建虚拟局域网 (Tailscale)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Windows-%E5%B7%A5%E4%BD%9C%E7%AB%99%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.1.1.</span> <span class="toc-text">1. Windows 工作站端设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-MacOS-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">2. MacOS 客户端设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%BF%9E%E9%80%9A%E6%80%A7%E6%B5%8B%E8%AF%95"><span class="toc-number">1.1.3.</span> <span class="toc-text">3. 连通性测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E9%83%A8%E7%BD%B2-SSH-%E6%9C%8D%E5%8A%A1-Windows-%E7%AB%AF"><span class="toc-number">1.2.</span> <span class="toc-text">第二阶段：部署 SSH 服务 (Windows 端)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="toc-number">1.2.1.</span> <span class="toc-text">1. 下载与安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%85%8D%E7%BD%AE%E5%B9%B6%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.2.</span> <span class="toc-text">2. 配置并启动服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%8E%B7%E5%8F%96%E7%99%BB%E5%BD%95%E7%94%A8%E6%88%B7%E5%90%8D"><span class="toc-number">1.2.3.</span> <span class="toc-text">3. 获取登录用户名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E9%85%8D%E7%BD%AE-VS-Code-MacOS-%E7%AB%AF"><span class="toc-number">1.3.</span> <span class="toc-text">第三阶段：配置 VS Code (MacOS 端)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="toc-number">1.3.1.</span> <span class="toc-text">1. 安装插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%85%8D%E7%BD%AE-SSH-%E8%BF%9E%E6%8E%A5%E4%BF%A1%E6%81%AF"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.配置 SSH 连接信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%E4%B8%8E%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.</span> <span class="toc-text">第四阶段：建立连接与环境配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%8F%91%E8%B5%B7%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.4.1.</span> <span class="toc-text">1.发起连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81"><span class="toc-number">1.4.2.</span> <span class="toc-text">2.输入密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%BF%9C%E7%A8%8B%E7%8E%AF%E5%A2%83%E6%8C%82%E8%BD%BD"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.远程环境挂载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-number">1.5.</span> <span class="toc-text">第五阶段：常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#VS-Code-Server-%E5%90%AF%E5%8A%A8%E5%B4%A9%E6%BA%83"><span class="toc-number">1.5.1.</span> <span class="toc-text">VS Code Server 启动崩溃</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="anzhiyufont anzhiyu-icon-history"></i><span>最近发布</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/" title="跨网络远程开发环境搭建指南"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/SSH.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="跨网络远程开发环境搭建指南"/></a><div class="content"><a class="title" href="/2026/02/01/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/%E8%B7%A8%E7%BD%91%E7%BB%9C%E8%BF%9C%E7%A8%8B%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/" title="跨网络远程开发环境搭建指南">跨网络远程开发环境搭建指南</a><time datetime="2026-01-31T16:00:00.000Z" title="发表于 2026-02-01 00:00:00">2026-02-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C/" title="羽化镶嵌：实现栅格数据无缝镶嵌的方案"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="羽化镶嵌：实现栅格数据无缝镶嵌的方案"/></a><div class="content"><a class="title" href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/%E7%BE%BD%E5%8C%96%E9%95%B6%E5%B5%8C/" title="羽化镶嵌：实现栅格数据无缝镶嵌的方案">羽化镶嵌：实现栅格数据无缝镶嵌的方案</a><time datetime="2026-01-08T16:00:00.000Z" title="发表于 2026-01-09 00:00:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E7%A8%8B%E5%BA%8F/%E8%87%AA%E5%8A%A8%E6%8E%92%E7%89%88%E8%BD%AF%E4%BB%B6/" title="AutoGrid：一个可以自动组图排版的工具"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/AutoGrid.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="AutoGrid：一个可以自动组图排版的工具"/></a><div class="content"><a class="title" href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E7%A8%8B%E5%BA%8F/%E8%87%AA%E5%8A%A8%E6%8E%92%E7%89%88%E8%BD%AF%E4%BB%B6/" title="AutoGrid：一个可以自动组图排版的工具">AutoGrid：一个可以自动组图排版的工具</a><time datetime="2026-01-08T16:00:00.000Z" title="发表于 2026-01-09 00:00:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/mapborn/" title="Mapborn：轻量级地理空间绘图工具库"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/mapborn.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Mapborn：轻量级地理空间绘图工具库"/></a><div class="content"><a class="title" href="/2026/01/09/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/mapborn/" title="Mapborn：轻量级地理空间绘图工具库">Mapborn：轻量级地理空间绘图工具库</a><time datetime="2026-01-08T16:00:00.000Z" title="发表于 2026-01-09 00:00:00">2026-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/08/%E9%81%A5%E6%84%9F/SAR/InSAR-02-MintPy-Workflow/" title="InSAR 处理(二)：MintPy"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/blog/mintpy.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="InSAR 处理(二)：MintPy"/></a><div class="content"><a class="title" href="/2026/01/08/%E9%81%A5%E6%84%9F/SAR/InSAR-02-MintPy-Workflow/" title="InSAR 处理(二)：MintPy">InSAR 处理(二)：MintPy</a><time datetime="2026-01-07T16:00:00.000Z" title="发表于 2026-01-08 00:00:00">2026-01-08</time></div></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"></div><div id="footer-bar"><div class="footer-bar-links"><div class="footer-bar-left"><div id="footer-bar-tips"><div class="copyright">&copy;2020 - 2026 By <a class="footer-bar-link" href="/" title="Geo.Wqlin" target="_blank">Geo.Wqlin</a></div></div><div id="footer-type-tips"></div></div><div class="footer-bar-right"><a class="footer-bar-link" target="_blank" rel="noopener" href="https://github.com/anzhiyu-c/hexo-theme-anzhiyu" title="主题">主题</a></div></div></div></footer></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="sidebar-site-data site-data is-center"><a href="/archives/" title="archive"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/" title="tag"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/" title="category"><div class="headline">分类</div><div class="length-num">6</div></a></div><span class="sidebar-menu-item-title">功能</span><div class="sidebar-menu-item"><a class="darkmode_switchbutton menu-child" href="javascript:void(0);" title="显示模式"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span>显示模式</span></a></div><div class="back-menu-list-groups"><div class="back-menu-list-group"><div class="back-menu-list-title">网页</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://hexo.anheyu.com/" title="博客"><img class="back-menu-item-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="/img/favicon.ico" alt="博客"/><span class="back-menu-item-text">博客</span></a></div></div><div class="back-menu-list-group"><div class="back-menu-list-title">项目</div><div class="back-menu-list"><a class="back-menu-item" target="_blank" rel="noopener" href="https://image.anheyu.com/" title="安知鱼图床"><img class="back-menu-item-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null,this.src=&quot;/img/404.jpg&quot;" data-lazy-src="https://image.anheyu.com/favicon.ico" alt="安知鱼图床"/><span class="back-menu-item-text">安知鱼图床</span></a></div></div></div><div class="menus_items"><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/"><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 遥感</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/categories/%E9%81%A5%E6%84%9F/%E5%85%89%E5%AD%A6%E9%81%A5%E6%84%9F/"><span> 光学</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E9%81%A5%E6%84%9F/SAR/"><span> SAR</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E9%81%A5%E6%84%9F/%E5%85%B6%E4%BB%96%E7%9A%84"><span> 其他的</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 深度学习</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/CNN/"><span> CNN</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/GAN/"><span> GAN</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/Transformer/"><span> Transformer</span></a></li></ul></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span> 机器学习</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><span> 工具箱</span></a><ul class="menus_item_child"><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/CLI/"><span> CLI工具</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E4%BB%A3%E7%A0%81/"><span> 代码</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E7%A8%8B%E5%BA%8F/"><span> 程序</span></a></li><li><a class="site-page child faa-parent animated-hover" href="/categories/%E5%B7%A5%E5%85%B7%E7%AE%B1/%E6%95%99%E7%A8%8B/"><span> 教程</span></a></li></ul></div><div class="menus_item"><a class="site-page faa-parent animated-hover" href="/about/"><span> 关于我</span></a></div></div><span class="sidebar-menu-item-title">标签</span><div class="card-tags"><div class="item-headline"></div><div class="card-tag-cloud"><a href="/tags/ISCE2/" style="font-size: 0.88rem;">ISCE2<sup>2</sup></a><a href="/tags/InSAR/" style="font-size: 0.88rem;">InSAR<sup>2</sup></a><a href="/tags/Python/" style="font-size: 0.88rem;">Python<sup>3</sup></a><a href="/tags/SBAS/" style="font-size: 0.88rem;">SBAS<sup>2</sup></a><a href="/tags/Sentinel-1/" style="font-size: 0.88rem;">Sentinel-1<sup>2</sup></a><a href="/tags/%E4%BB%A3%E7%A0%81/" style="font-size: 0.88rem;">代码<sup>2</sup></a><a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 0.88rem;">工具<sup>2</sup></a><a href="/tags/%E6%95%99%E7%A8%8B/" style="font-size: 0.88rem;">教程<sup>1</sup></a><a href="/tags/%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6/" style="font-size: 0.88rem;">远程控制<sup>1</sup></a><a href="/tags/%E9%95%B6%E5%B5%8C/" style="font-size: 0.88rem;">镶嵌<sup>1</sup></a></div></div><hr/></div></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="anzhiyufont anzhiyu-icon-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="anzhiyufont anzhiyu-icon-arrows-left-right"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="anzhiyufont anzhiyu-icon-gear"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="anzhiyufont anzhiyu-icon-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></button></div></div><div id="nav-music"><a id="nav-music-hoverTips" onclick="anzhiyu.musicToggle()" accesskey="m">播放音乐</a><div id="console-music-bg"></div><meting-js id="8152976493" server="netease" type="playlist" mutex="true" preload="none" theme="var(--anzhiyu-main)" data-lrctype="0" order="random" volume="0.7"></meting-js></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="anzhiyufont anzhiyu-icon-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="anzhiyufont anzhiyu-icon-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="anzhiyufont anzhiyu-icon-arrow-rotate-right" style="font-size: 1rem;"></i></div><div class="rightMenu-item" id="menu-top"><i class="anzhiyufont anzhiyu-icon-arrow-up"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuPlugin"><div class="rightMenu-item" id="menu-copytext"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制选中文本</span></div><div class="rightMenu-item" id="menu-pastetext"><i class="anzhiyufont anzhiyu-icon-paste"></i><span>粘贴文本</span></div><a class="rightMenu-item" id="menu-commenttext"><i class="anzhiyufont anzhiyu-icon-comment-medical"></i><span>引用到评论</span></a><div class="rightMenu-item" id="menu-newwindow"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开</span></div><div class="rightMenu-item" id="menu-copylink"><i class="anzhiyufont anzhiyu-icon-link"></i><span>复制链接地址</span></div><div class="rightMenu-item" id="menu-copyimg"><i class="anzhiyufont anzhiyu-icon-images"></i><span>复制此图片</span></div><div class="rightMenu-item" id="menu-downloadimg"><i class="anzhiyufont anzhiyu-icon-download"></i><span>下载此图片</span></div><div class="rightMenu-item" id="menu-newwindowimg"><i class="anzhiyufont anzhiyu-icon-window-restore"></i><span>新窗口打开图片</span></div><div class="rightMenu-item" id="menu-search"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>站内搜索</span></div><div class="rightMenu-item" id="menu-searchBaidu"><i class="anzhiyufont anzhiyu-icon-magnifying-glass"></i><span>百度搜索</span></div><div class="rightMenu-item" id="menu-music-toggle"><i class="anzhiyufont anzhiyu-icon-play"></i><span>播放音乐</span></div><div class="rightMenu-item" id="menu-music-back"><i class="anzhiyufont anzhiyu-icon-backward"></i><span>切换到上一首</span></div><div class="rightMenu-item" id="menu-music-forward"><i class="anzhiyufont anzhiyu-icon-forward"></i><span>切换到下一首</span></div><div class="rightMenu-item" id="menu-music-playlist" onclick="window.open(&quot;https://y.qq.com/n/ryqq/playlist/8802438608&quot;, &quot;_blank&quot;);" style="display: none;"><i class="anzhiyufont anzhiyu-icon-radio"></i><span>查看所有歌曲</span></div><div class="rightMenu-item" id="menu-music-copyMusicName"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制歌名</span></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" id="menu-randomPost"><i class="anzhiyufont anzhiyu-icon-shuffle"></i><span>随便逛逛</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="anzhiyufont anzhiyu-icon-cube"></i><span>博客分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="anzhiyufont anzhiyu-icon-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item" id="menu-copy" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-copy"></i><span>复制地址</span></a><a class="rightMenu-item" id="menu-commentBarrage" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-message"></i><span class="menu-commentBarrage-text">关闭热评</span></a><a class="rightMenu-item" id="menu-darkmode" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-circle-half-stroke"></i><span class="menu-darkmode-text">深色模式</span></a><a class="rightMenu-item" id="menu-translate" href="javascript:void(0);"><i class="anzhiyufont anzhiyu-icon-language"></i><span>轉為繁體</span></a></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.cbd.int/@fancyapps/ui@6.1.6/dist/fancybox/fancybox.umd.js"></script><script src="https://cdn.cbd.int/instant.page@5.2.0/instantpage.js" type="module"></script><script src="https://cdn.cbd.int/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.cbd.int/node-snackbar@0.1.16/dist/snackbar.min.js"></script><canvas id="universe"></canvas><script async src="https://npm.elemecdn.com/anzhiyu-theme-static@1.0.0/dark/dark.js"></script><script>// 消除控制台打印
+var HoldLog = console.log;
+console.log = function () {};
+let now1 = new Date();
+queueMicrotask(() => {
+  const Log = function () {
+    HoldLog.apply(console, arguments);
+  }; //在恢复前输出日志
+  const grt = new Date("04/01/2021 00:00:00"); //此处修改你的建站时间或者网站上线时间
+  now1.setTime(now1.getTime() + 250);
+  const days = (now1 - grt) / 1000 / 60 / 60 / 24;
+  const dnum = Math.floor(days);
+  const ascll = [
+    `欢迎使用安知鱼!`,
+    `生活明朗, 万物可爱`,
+    `
+        
+       █████╗ ███╗   ██╗███████╗██╗  ██╗██╗██╗   ██╗██╗   ██╗
+      ██╔══██╗████╗  ██║╚══███╔╝██║  ██║██║╚██╗ ██╔╝██║   ██║
+      ███████║██╔██╗ ██║  ███╔╝ ███████║██║ ╚████╔╝ ██║   ██║
+      ██╔══██║██║╚██╗██║ ███╔╝  ██╔══██║██║  ╚██╔╝  ██║   ██║
+      ██║  ██║██║ ╚████║███████╗██║  ██║██║   ██║   ╚██████╔╝
+      ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+        
+        `,
+    "已上线",
+    dnum,
+    "天",
+    "©2020 By 安知鱼 V1.7.1",
+  ];
+  const ascll2 = [`NCC2-036`, `调用前置摄像头拍照成功，识别为【小笨蛋】.`, `Photo captured: `, `🤪`];
+
+  setTimeout(
+    Log.bind(
+      console,
+      `\n%c${ascll[0]} %c ${ascll[1]} %c ${ascll[2]} %c${ascll[3]}%c ${ascll[4]}%c ${ascll[5]}\n\n%c ${ascll[6]}\n`,
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      "color:#425AEF",
+      "",
+      "color:#425AEF",
+      ""
+    )
+  );
+  setTimeout(
+    Log.bind(
+      console,
+      `%c ${ascll2[0]} %c ${ascll2[1]} %c \n${ascll2[2]} %c\n${ascll2[3]}\n`,
+      "color:white; background-color:#4fd953",
+      "",
+      "",
+      'background:url("https://npm.elemecdn.com/anzhiyu-blog@1.1.6/img/post/common/tinggge.gif") no-repeat;font-size:450%'
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c WELCOME %c 你好，小笨蛋.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(
+      console,
+      "%c ⚡ Powered by 安知鱼 %c 你正在访问 Geo.Wqlin 的博客.",
+      "color:white; background-color:#f0ad4e",
+      ""
+    )
+  );
+
+  setTimeout(Log.bind(console, "%c W23-12 %c 你已打开控制台.", "color:white; background-color:#4f90d9", ""));
+
+  setTimeout(
+    console.warn.bind(console, "%c S013-782 %c 你现在正处于监控中.", "color:white; background-color:#d9534f", "")
+  );
+});</script><script async src="/anzhiyu/random.js"></script><div class="js-pjax"><input type="hidden" name="page-type" id="page-type" value="post"></div><script>var visitorMail = "";
+</script><script async data-pjax src="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/waterfall/waterfall.js"></script><script src="https://cdn.cbd.int/qrcodejs@1.0.0/qrcode.min.js"></script><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.1.9/icon/ali_iconfont_css.css"><link rel="stylesheet" href="https://cdn.cbd.int/anzhiyu-theme-static@1.0.0/aplayer/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.cbd.int/anzhiyu-blog-static@1.0.1/js/APlayer.min.js"></script><script src="https://cdn.cbd.int/hexo-anzhiyu-music@1.0.1/assets/js/Meting2.min.js"></script><script src="https://cdn.cbd.int/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+  // removeEventListener scroll 
+  anzhiyu.removeGlobalFnEvent('pjax')
+  anzhiyu.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script charset="UTF-8" src="https://cdn.cbd.int/anzhiyu-theme-static@1.1.5/accesskey/accesskey.js"></script></div><div id="popup-window"><div class="popup-window-title">通知</div><div class="popup-window-divider"></div><div class="popup-window-content"><div class="popup-tip">你好呀</div><div class="popup-link"><i class="anzhiyufont anzhiyu-icon-arrow-circle-right"></i></div></div></div></body></html>
